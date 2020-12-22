@@ -1,0 +1,113 @@
+<!--  DEBUT HTML -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://kit.fontawesome.com/0c9cc5d14e.js" crossorigin="anonymous"></script>
+  <title>convertisseur de Photos</title>
+</head>
+<body>
+    <div class="bg-dark">
+      <div class="container">
+        <header>
+          <div class="row">
+            <div class="col text-center text-light">
+              <h1>Convertisseur de photos</h1>
+            </div>
+          </div>
+        </header>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-11 col-md-6 text-center p-1">
+          <p><span class="font-weight-bold">Step 1 :</span> Choose an image</p>
+            <input onchange="storeImage(this)" type="file" />
+        </div>
+        <div class="col-sm-11 col-md-6 text-center p-1">
+          <p><span class="font-weight-bold">Step 2 :</span> Choose quality and size for output image</p>
+          <p>Enter width (in px): <input id="width" class="form-control" /></p>
+          <p>Enter height (in px) : <input id="height" class="form-control" /></p>
+          <p>
+            Enter Quality (0 to 100) <br />
+            <input id="quality" type="range"  min="0" max="100" step="10" class="w-100" list="tickmarks">
+            <datalist id="tickmarks">
+              <option value="0" label="0">
+              <option value="10" >
+              <option value="20" >
+              <option value="30" >
+              <option value="40" >
+              <option value="50" label="50">
+              <option value="60" >
+              <option value="70" >
+              <option value="80" >
+              <option value="90" >
+              <option value="100" label="100">
+            </datalist>
+          </p>
+        </div>
+        <div class="col-12 rounded text-center p-1">
+          <p><span class="font-weight-bold">Step 3 :</span> Process</p>
+          <button type="button" data-toggle="modal" data-target="#exampleModal" onclick="setImage()">Set image</button><br />
+        </div>
+      </div>
+    </div>
+    
+          <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">You're picture</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body text-center">
+                  <canvas id="canvas" class="img-fluid"></canvas>
+                  <img id="store" style="max-width: 1024px; max-height: 1024px; display: none" class="img-fluid"/>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            </div>
+          </div>
+</body>
+</html>
+
+<!-- Scripts Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+<!--  FIN HTML/ DEBUT JS -->
+<script>
+  //store file uploaded in <img>
+  function storeImage(input) {
+    let reader = new FileReader();
+    reader.onload = function (e) {
+      document.getElementById("store").setAttribute("src", e.target.result);
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+  //display image in canvas with width & height from user
+  function setImage(event) {
+    let canvas = document.getElementById("canvas");
+    let width = document.getElementById("width").value;
+    let height = document.getElementById("height").value;
+    canvas.height = height;
+    canvas.width = width;
+    //draw image first time (not visible on user side)
+    canvas.getContext("2d").drawImage(document.getElementById("store"), 0, 0, width, height);
+    //edit store with quality and format edit 
+    console.log(document.getElementById("quality").value);
+    document.getElementById("store").setAttribute("src", canvas.toDataURL("image/webp", document.getElementById("quality").value / 100));
+    //send editedImg to backend or do whatever you want with it
+    let editedImg = document.getElementById("store");
+    //draw image a second time with quality and file change
+    canvas.getContext("2d").drawImage(editedImg, 0, 0, width, height);
+    // event.preventDefault();
+  }
+</script>
